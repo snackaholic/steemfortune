@@ -1,0 +1,57 @@
+<html>
+<head>
+    <link href="main.css" rel="stylesheet" title="Default Style">
+</head>
+
+<body>
+<header>
+  <h1>Steemit Zufallsgenerator</h1>
+</header>
+
+<section>
+  <h2>Steemians eingeben</h2>
+  <div class="sectionInnerWrapper">
+    <label for="teilnehmer">Name des Teilnehmers:</label>
+    <input type="text" id="teilnehmer" placeholder="Snackaholic"/>
+    <button id="knopf">Steemian hinzufügen</button>
+  </div>
+</section>
+
+<section>
+  <h2>Upvoter hinzufügen</h2>
+  <div class="sectionInnerWrapper">
+    <label for="link">Link zum Post</label>
+    <input type="text" id="upvoterLink" placeholder="Bitte Link einfügen"/>
+    <button id="upvoterHinzufuegen">Upvoter hinzufügen</button>
+  </div>
+</section>
+
+<section>
+  <h2>Kommentatoren hinzufügen</h2>
+  <div class="sectionInnerWrapper">
+    <label for="link">Link zum Post</label>
+    <input type="text" id="kommentatorenLink" placeholder="Bitte Link einfügen"/>
+    <button id="kommentatorenHinzufuegen">Kommentatoren hinzufügen</button>
+  </div>
+</section>
+
+<section class="teilnehmerlisteWrapper">
+  <h2>Teilnehmerliste</h2>
+  <div class="sectionInnerWrapper">
+    <ul id="teilnehmerliste"></ul>
+    <button id="loeschen">Liste leeren</button>
+  </div>
+</section>
+
+<section>
+<h2>Ermittlung der Gewinner</h2>
+<div class="sectionInnerWrapper">
+  <label for="anzahlGewinner">Anzahl der Gewinner:</label>
+  <input type="text" id="anzahlGewinner" placeholder="0"/>
+  <button id="ermitteln">Gewinner ermitteln</button>
+</div>
+</section>
+<script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
