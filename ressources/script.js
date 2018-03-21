@@ -3,13 +3,13 @@ var teilnehmerliste = [];
 /* neuer Teilnehmer Konstruktor*/
 function neuerTeilnehmer(name, lose, pburl) {
 	var teilnehmer = {};
-    if (lose != undefined) {
+    if (lose !== undefined) {
     	teilnehmer["lose"] = lose;
     }
-    if (pburl != undefined) {
+    if (pburl !== undefined) {
     	teilnehmer["pburl"] = pburl;
     }
-  	if (name != undefined) {
+  	if (name !== undefined) {
     	teilnehmer["name"] = name;
     }
     return teilnehmer;
@@ -18,7 +18,7 @@ function neuerTeilnehmer(name, lose, pburl) {
 function fuegeTeilnehmerlisteHinzu(teilnehmer) {
 	var alreadyInList = false;
     for (var i=0; i < teilnehmerliste.length; i++) {
-    	if (teilnehmerliste[i].name === teilnehmer.name) {
+        if (teilnehmerliste[i].name === teilnehmer.name) {
             alreadyInList = true;
             break;
         }
@@ -44,8 +44,10 @@ knopf.addEventListener("click", function(){
     // feld leeren
     eingabefeld.value = "";
     // teilnehmer hinzufuegen
-    var neu = neuerTeilnehmer(wert);
-    fuegeTeilnehmerlisteHinzu(neu);
+    if (wert != undefined && wert.length > 0) {
+        var neu = neuerTeilnehmer(wert);
+        fuegeTeilnehmerlisteHinzu(neu);
+    }
     // liste darstellen
     stelleListedar();
 });
@@ -77,38 +79,37 @@ function stelleListedar() {
     var guiTeilnehmerliste = document.getElementById("teilnehmerliste");
     // ul liste leeren
     while (guiTeilnehmerliste.firstChild) {
-      guiTeilnehmerliste.removeChild(guiTeilnehmerliste.firstChild);
+        guiTeilnehmerliste.removeChild(guiTeilnehmerliste.firstChild);
   	}
     // ul liste füllen
     for (var i=0; i < teilnehmerliste.length; i++) {
   		var li = document.createElement("li");
   		var textKnoten = document.createTextNode(teilnehmerliste[i].name);
   	 	li.appendChild(textKnoten);
-      // remove x an li hängen
-      var span = document.createElement("span");
-      var txt = document.createTextNode("x");
-      span.className = "delete";
-      span.appendChild(txt);
-      li.appendChild(span);
-      // li mit data index ausstatten
-      li.setAttribute('data-array-index', i);
-      // li in gui platzieren
-      guiTeilnehmerliste.appendChild(li);
+        // remove x an li hängen
+        var span = document.createElement("span");
+        var txt = document.createTextNode("x");
+        span.className = "delete";
+        span.appendChild(txt);
+        li.appendChild(span);
+        // li mit data index ausstatten
+        li.setAttribute('data-array-index', i);
+        // li in gui platzieren
+        guiTeilnehmerliste.appendChild(li);
   	}
     
     // deletes funktion anhängen
     var deletes = document.getElementsByClassName("delete");
   	for (var j = 0; j < deletes .length; j++) {
-    	deletes [j].onclick = function() {
-    	var eintrag = this.parentElement;  // auf das LI zugreifen
-    	var referenz = eintrag.getAttribute('data-array-index');
-    	loescheEintrag(referenz);
+    	    deletes [j].onclick = function() {
+    	    var eintrag = this.parentElement;  // auf das LI zugreifen
+    	    var referenz = eintrag.getAttribute('data-array-index');
+    	    loescheEintrag(referenz);
     	};
     }
 }
 
 /* Gewinner ermitteln  */
-
 var ermittelnKnopf = document.getElementById("ermitteln");
 ermittelnKnopf.addEventListener("click", function(){
     var anzahlGewinner = document.getElementById("anzahlGewinner");
@@ -139,10 +140,12 @@ ermittelnKnopf.addEventListener("click", function(){
 	}
 });
 
+// Returns a random item from a given array
 function giveRandomItem (array) {
- return array[Math.floor(Math.random() * array.length)];
+    return array[Math.floor(Math.random() * array.length)];
 }
 
+// Generates the lottery pot, based on the amount of tickets each participant has
 function generiereLostopf() {
     var lostopf = [];
     for (var i=0; i < teilnehmerliste.length; i++) {
@@ -160,7 +163,6 @@ function generiereLostopf() {
 
 
 /* Upvoter mit Steemit api abholen */
-
 var upvoterKnopf = document.getElementById("upvoterHinzufuegen");
 upvoterKnopf.addEventListener("click", function() {
 	var regex = new RegExp("@([a-z]+)\/([^\/]+)$");
@@ -174,20 +176,14 @@ upvoterKnopf.addEventListener("click", function() {
             var neu = neuerTeilnehmer(result[i].voter);
     		fuegeTeilnehmerlisteHinzu(neu);
 		  }
-          // Feedback how many new Entries
-		  if (window.location.href.indexOf("/en/") == -1) {
-		      // German notification 
-		      placeNotification("Hinweis", "<p>Es wurden insgesammt " + length + " Eintr&auml;ge der Liste hinzugef&uuml;gt!</p>");
-		  } else {
-		      placeNotification("Hint", "<p>A total of " + length + " participants got added to the list!</p>");
-		  }
+          // give user feedback about new added participants
+		  addedParticipantsNotification(length);
         }
         stelleListedar();
     });
 });
 
 /* Kommentatoren mit Steemit api abholen */
-
 var kommentatorenKnopf = document.getElementById("kommentatorenHinzufuegen");
 kommentatorenKnopf.addEventListener("click", function(){
 	var regex = new RegExp("@([a-z]+)\/([^\/]+)$");
@@ -201,18 +197,52 @@ kommentatorenKnopf.addEventListener("click", function(){
                 var neu = neuerTeilnehmer(result[i].author);
     		    fuegeTeilnehmerlisteHinzu(neu);
 		    }
-            // Feedback how many new Entries
-		    if (window.location.href.indexOf("/en/") == -1) {
-		        // German notification 
-		        placeNotification("Hinweis", "<p>Es wurden insgesammt " + length + " Eintr&auml;ge der Liste hinzugef&uuml;gt!</p>");
-		    } else {
-		        placeNotification("Hint", "<p>A total of " + length + " participants got added to the list!</p>");
-		    }
+            // give user feedback about new added participants
+		    addedParticipantsNotification(length);
         }
         stelleListedar();
     });
 });
 
+/* Reestemer mit Steemit api abholen */
+var reestemerKnopf = document.getElementById("reestemerHinzufuegen");
+reestemerKnopf.addEventListener("click", function () {
+    var regex = new RegExp("@([a-z]+)\/([^\/]+)$");
+    var ulink = document.getElementById("reestemerLink").value;
+    var author = ulink.match(regex)[1];
+    var link = ulink.match(regex)[2];
+    steem.api.getRebloggedBy(author, link, function (err, result) {
+        if (result != undefined) {
+            var length = result.length;
+            for (var i = 0; i < length; i++) {
+                // exclude the author from his own post
+                if (author != result[i]) {
+                    var neu = neuerTeilnehmer(result[i]);
+                    fuegeTeilnehmerlisteHinzu(neu);
+                } 
+            }
+            // correct result length if author was within list
+            for (var i = 0; i < result.length; i++) {
+                if (author == result[i]) {
+                    length -= 1;
+                }
+            }
+            // give user feedback about new added participants
+            addedParticipantsNotification(length);
+        }
+        stelleListedar();
+    });
+});
+
+// Feedback how many new Entries got added
+function addedParticipantsNotification(amount) {
+    if (window.location.href.indexOf("/en/") == -1) {
+        // German notification 
+        placeNotification("Hinweis", "<p>Es wurden insgesammt " + amount + " Eintr&auml;ge der Liste hinzugef&uuml;gt!</p>");
+    } else {
+        placeNotification("Hint", "<p>A total of " + amount + " participants got added to the list!</p>");
+    }
+}
 
 /* Notification erstellen */
 function placeNotification(headline, content) {
