@@ -1,7 +1,15 @@
-var teilnehmerliste = [];
+// participants list
+var participants = [];
+// callback counters for steemit api
+var callbackCounter = 0;
+var expectedCallbackCounter = 0;
+var addedEntrys = 0;
+// callback interval checker
+var handleInterval;
 
-/* neuer Teilnehmer Konstruktor*/
-function neuerTeilnehmer(name, lose, pburl) {
+
+/* new participant constructor*/
+function newParticipant(name, lose, pburl) {
 	var teilnehmer = {};
     if (lose !== undefined) {
     	teilnehmer["lose"] = lose;
@@ -15,38 +23,39 @@ function neuerTeilnehmer(name, lose, pburl) {
     return teilnehmer;
 }
 
-function fuegeTeilnehmerlisteHinzu(teilnehmer) {
+/* Adds a new participant to the participants list */
+function addParticipant(participant) {
 	var alreadyInList = false;
-    for (var i=0; i < teilnehmerliste.length; i++) {
-        if (teilnehmerliste[i].name === teilnehmer.name) {
+	for (var i = 0; i < participants.length; i++) {
+	    if (participants[i].name === participant.name) {
             alreadyInList = true;
             break;
         }
     }
     if (!alreadyInList) {
-    	teilnehmerliste.push(teilnehmer);
+        participants.push(participant);
     } else {
         if (window.location.href.indexOf("/en/") == -1) {
             // German notification error
-            placeNotification("Fehler!", "<p>Teilnehmer " + teilnehmer.name + " bereits in Liste vorhanden!</p>");
+            placeNotification("Fehler!", "<p>Teilnehmer " + participant.name + " bereits in Liste vorhanden!</p>");
         } else {
-            placeNotification("Error!", "<p>Participant " + teilnehmer.name + " is already in the participants list!</p>");
+            placeNotification("Error!", "<p>Participant " + participant.name + " is already in the participants list!</p>");
         }
     }
 }
 
-// steemian hinzufuegen
+// add stemian
 var knopf = document.getElementById("knopf");
 knopf.addEventListener("click", function(){
-	// feld holen
-    var eingabefeld = document.getElementById("teilnehmer");
-    var wert = eingabefeld.value;
-    // feld leeren
-    eingabefeld.value = "";
-    // teilnehmer hinzufuegen
-    if (wert != undefined && wert.length > 0) {
-        var neu = neuerTeilnehmer(wert);
-        fuegeTeilnehmerlisteHinzu(neu);
+	// get field
+    var field = document.getElementById("teilnehmer");
+    var fieldvalue = field.value;
+    // clear field
+    field.value = "";
+    // add participant to the list
+    if (fieldvalue != undefined && fieldvalue.length > 0) {
+        var participant = newParticipant(fieldvalue);
+        addParticipant(participant);
     }
     // liste darstellen
     stelleListedar();
@@ -58,7 +67,7 @@ loeschenknopf.addEventListener("click", function(){
 });
 
 function listeLeeren() {
-    teilnehmerliste = [];
+    participants = [];
     sichtbareListeLeeren();
 }
 
@@ -68,10 +77,21 @@ function sichtbareListeLeeren () {
         guiTeilnehmerliste.removeChild(guiTeilnehmerliste.firstChild);
     }
 }
-
+// deletes the participant by index
 function loescheEintrag (index) {
-	teilnehmerliste.splice(index, 1);
+    participants.splice(index, 1);
     stelleListedar();
+}
+
+// deletes the participant by name from the given collection
+function deleteByName(name, collection) {
+    for (var i = 0; i < collection.length; i++) {
+        if (collection[i].name === name) {
+            collection.splice(i, 1);
+            i = -1;
+        }
+    }
+    return collection;
 }
 
 function stelleListedar() {
@@ -82,9 +102,9 @@ function stelleListedar() {
         guiTeilnehmerliste.removeChild(guiTeilnehmerliste.firstChild);
   	}
     // ul liste füllen
-    for (var i=0; i < teilnehmerliste.length; i++) {
+    for (var i = 0; i < participants.length; i++) {
   		var li = document.createElement("li");
-  		var textKnoten = document.createTextNode(teilnehmerliste[i].name);
+  		var textKnoten = document.createTextNode(participants[i].name);
   	 	li.appendChild(textKnoten);
         // remove x an li hängen
         var span = document.createElement("span");
@@ -109,21 +129,30 @@ function stelleListedar() {
     }
 }
 
-/* Gewinner ermitteln  */
+/* determine the winners  */
 var ermittelnKnopf = document.getElementById("ermitteln");
 ermittelnKnopf.addEventListener("click", function(){
     var anzahlGewinner = document.getElementById("anzahlGewinner");
     var wert = anzahlGewinner.value;
-    var gewinnerString = "";
+    var winners = [];
     var lostopf = generiereLostopf();
+    var allowMultipleWinning = document.getElementById("allowMultipleWinning").checked;
 	for (var i = 0; i < wert; i++) {
-	    var gewinner = giveRandomItem(lostopf);
-	    if (i == 0) {
-	        gewinnerString += gewinner.name;
-	    } else {
-	        gewinnerString += "<br>" + gewinner.name;
+	    var winner = giveRandomItem(lostopf);
+	    winners.push(winner);
+	    if (!allowMultipleWinning) {
+	        lostopf = deleteByName(winner.name, lostopf);
+	        if (lostopf.length === 0) {
+	            break;
+	        }
 	    }
 	}
+    // generate winnerstring
+	var gewinnerString = "";
+	for (var i = 0; i < winners.length; i++) {
+	    gewinnerString += "<br>" + winners[i].name;
+	}
+	
 	if (window.location.href.indexOf("/en/") == -1) {
 	    // German notification 
 	    if (wert == 1) {
@@ -148,8 +177,8 @@ function giveRandomItem (array) {
 // Generates the lottery pot, based on the amount of tickets each participant has
 function generiereLostopf() {
     var lostopf = [];
-    for (var i=0; i < teilnehmerliste.length; i++) {
-  	    var teilnehmer = teilnehmerliste[i];
+    for (var i = 0; i < participants.length; i++) {
+        var teilnehmer = participants[i];
         var lose = 1;
         if (teilnehmer.lose != undefined) {
             var lose = teilnehmer.lose;
@@ -161,79 +190,6 @@ function generiereLostopf() {
     return lostopf;
 }
 
-
-/* Upvoter mit Steemit api abholen */
-var upvoterKnopf = document.getElementById("upvoterHinzufuegen");
-upvoterKnopf.addEventListener("click", function() {
-	var regex = new RegExp("@([a-z]+)\/([^\/]+)$");
-    var ulink = document.getElementById("upvoterLink").value;
-    var author = ulink.match(regex)[1];
-    var link = ulink.match(regex)[2];
-    steem.api.getActiveVotes(author, link, function(err, result) {
-        if (result != undefined) {
-          var length = result.length;
-		  for(var i= 0; i < length; i++) {
-            var neu = neuerTeilnehmer(result[i].voter);
-    		fuegeTeilnehmerlisteHinzu(neu);
-		  }
-          // give user feedback about new added participants
-		  addedParticipantsNotification(length);
-        }
-        stelleListedar();
-    });
-});
-
-/* Kommentatoren mit Steemit api abholen */
-var kommentatorenKnopf = document.getElementById("kommentatorenHinzufuegen");
-kommentatorenKnopf.addEventListener("click", function(){
-	var regex = new RegExp("@([a-z]+)\/([^\/]+)$");
-    var ulink = document.getElementById("kommentatorenLink").value;
-    var author = ulink.match(regex)[1];
-    var link = ulink.match(regex)[2];
-    steem.api.getContentReplies(author, link, function(err, result) {
-        if (result != undefined) {
-            var length = result.length;
-		    for (var i= 0; i < length; i++) {
-                var neu = neuerTeilnehmer(result[i].author);
-    		    fuegeTeilnehmerlisteHinzu(neu);
-		    }
-            // give user feedback about new added participants
-		    addedParticipantsNotification(length);
-        }
-        stelleListedar();
-    });
-});
-
-/* Reestemer mit Steemit api abholen */
-var reestemerKnopf = document.getElementById("reestemerHinzufuegen");
-reestemerKnopf.addEventListener("click", function () {
-    var regex = new RegExp("@([a-z]+)\/([^\/]+)$");
-    var ulink = document.getElementById("reestemerLink").value;
-    var author = ulink.match(regex)[1];
-    var link = ulink.match(regex)[2];
-    steem.api.getRebloggedBy(author, link, function (err, result) {
-        if (result != undefined) {
-            var length = result.length;
-            for (var i = 0; i < length; i++) {
-                // exclude the author from his own post
-                if (author != result[i]) {
-                    var neu = neuerTeilnehmer(result[i]);
-                    fuegeTeilnehmerlisteHinzu(neu);
-                } 
-            }
-            // correct result length if author was within list
-            for (var i = 0; i < result.length; i++) {
-                if (author == result[i]) {
-                    length -= 1;
-                }
-            }
-            // give user feedback about new added participants
-            addedParticipantsNotification(length);
-        }
-        stelleListedar();
-    });
-});
-
 // Feedback how many new Entries got added
 function addedParticipantsNotification(amount) {
     if (window.location.href.indexOf("/en/") == -1) {
@@ -241,6 +197,16 @@ function addedParticipantsNotification(amount) {
         placeNotification("Hinweis", "<p>Es wurden insgesammt " + amount + " Eintr&auml;ge der Liste hinzugef&uuml;gt!</p>");
     } else {
         placeNotification("Hint", "<p>A total of " + amount + " participants got added to the list!</p>");
+    }
+}
+
+// loading status notification
+function loadStatusNotification() {
+    if (window.location.href.indexOf("/en/") == -1) {
+        // German notification 
+        placeNotification("Bitte haben Sie einen Moment Geduld", '<div id="loadstatusSection"><div class="circle0 circle"></div><div class="circle1 circle"></div><div class="circle2 circle"></div><div class="circle3 circle"></div><div class="circle4 circle"></div><div class="circle5 circle"></div><div class="circle6 circle"></div><div class="circle7 circle"></div><div class="circle8 circle"></div><div class="circle9 circle"></div></div><p>Die Daten werden ermittelt, bitte warten...</p>');
+    } else {
+        placeNotification("Please be patient", '<div id="loadstatusSection"><div class="circle0 circle"></div><div class="circle1 circle"></div><div class="circle2 circle"></div><div class="circle3 circle"></div><div class="circle4 circle"></div><div class="circle5 circle"></div><div class="circle6 circle"></div><div class="circle7 circle"></div><div class="circle8 circle"></div><div class="circle9 circle"></div></div><p>Processing Data, please wait...</p>');
     }
 }
 
@@ -280,3 +246,113 @@ function removeNotifications() {
         temp.parentNode.removeChild(temp);
     }
 }
+
+/* Form evaluation */
+var form = document.getElementById("dataForm");
+form.addEventListener("submit", function () {
+    event.preventDefault();
+    // get option config
+    var getUpvoters = document.getElementById("upvoterCheckbox").checked;
+    var getCommentators = document.getElementById("commentorCheckbox").checked;
+    var getResteemer = document.getElementById("reestemerCheckbox").checked;
+    // get post data
+    var regex = new RegExp("@([a-z]+)\/([^\/]+)$");
+    var ulink = document.getElementById("postlink").value;
+    if (ulink != undefined && ulink.length > 0) {
+        var author = ulink.match(regex)[1];
+        var link = ulink.match(regex)[2];
+    }
+    if ((getUpvoters || getCommentators || getResteemer) && author != undefined && author != "") {
+        loadStatusNotification();
+        // get upvoters
+        if (getUpvoters) {
+            expectedCallbackCounter++;
+            steem.api.getActiveVotes(author, link, function (err, result) {
+                if (result != undefined) {
+                    var length = result.length;
+                    for (var i = 0; i < length; i++) {
+                        var neu = newParticipant(result[i].voter);
+                        addParticipant(neu);
+                    }
+                    addedEntrys += length;
+                }
+                callbackCounter++;
+            });
+        }
+        // get commentators
+        if (getCommentators) {
+            expectedCallbackCounter++;
+            steem.api.getContentReplies(author, link, function (err, result) {
+                if (result != undefined) {
+                    var length = result.length;
+                    for (var i = 0; i < length; i++) {
+                        var neu = newParticipant(result[i].author);
+                        addParticipant(neu);
+                    }
+                    addedEntrys += length;
+                }
+                callbackCounter++;
+            });
+        }
+        // get reestemers
+        if (getResteemer) {
+            expectedCallbackCounter++;
+            steem.api.getRebloggedBy(author, link, function (err, result) {
+                if (result != undefined) {
+                    var length = result.length;
+                    for (var i = 0; i < length; i++) {
+                        // exclude the author from his own post
+                        if (author != result[i]) {
+                            var neu = newParticipant(result[i]);
+                            addParticipant(neu);
+                        }
+                    }
+                    // correct result length if author was within list
+                    for (var i = 0; i < result.length; i++) {
+                        if (author == result[i]) {
+                            length -= 1;
+                        }
+                    }
+                    addedEntrys += length;
+                }
+                callbackCounter++;
+            });
+        }
+        // start interval, which checks status of variables. if reached, clear interval by itself and show list
+        handleInterval = setInterval(checkStatus, 50);
+    } 
+});
+
+// interval status checker for steemit callback actions
+function checkStatus() {
+    if (callbackCounter == expectedCallbackCounter) {
+        clearInterval(handleInterval);
+        addedParticipantsNotification(addedEntrys);
+        stelleListedar();
+        // reset variables
+        callbackCounter = 0;
+        expectedCallbackCounter = 0;
+        addedEntrys = 0;
+    }
+}
+
+/* tabnav functionality */
+var navbuttons = document.querySelectorAll("nav button");
+var tabcontents = document.querySelectorAll(".tab-content");
+navbuttons.forEach(function (elem) {
+    elem.addEventListener("click", function (element) {
+        var toShow = element.target.id;
+        toShow = toShow.replace("tab-", "tab-content-");
+        // remove active class on navbuttons
+        navbuttons.forEach(function (e) {
+            e.classList.remove("active");
+        });
+        // remove active class on tabcontent
+        tabcontents.forEach(function (e) {
+            e.classList.remove("active");
+        });
+        // set active classes
+        element.target.classList.add("active");
+        document.getElementById(toShow).classList.add("active");
+    });
+});
