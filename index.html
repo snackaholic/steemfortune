@@ -5,58 +5,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="format-detection" content="telephone=no" />
     <link href="ressources/main.css" rel="stylesheet" title="Default Style">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
 <body>
     <header>
         <h1>Steemit Zufallsgenerator</h1>
+        <nav class="clear">
+            <button id="tab-data" class="active">Datenerfassung</button>
+            <button id="tab-participants">Teilnehmer</button>
+            <button id="tab-winners">Gewinner</button>
+        </nav>
     </header>
-    <section>
-        <h2>Steemians eingeben</h2>
-        <div class="sectionInnerWrapper">
-            <label for="teilnehmer">Name des Teilnehmers:</label>
-            <input type="text" id="teilnehmer" placeholder="Snackaholic" />
-            <button id="knopf">Steemian hinzuf&uuml;gen</button>
-        </div>
-    </section>
-    <section>
-        <h2>Upvoter hinzuf&uuml;gen</h2>
-        <div class="sectionInnerWrapper">
-            <label for="link">Link zum Post</label>
-            <input type="text" id="upvoterLink" placeholder="Bitte Link einf&uuml;gen" />
-            <button id="upvoterHinzufuegen">Upvoter hinzuf&uuml;gen</button>
-        </div>
-    </section>
-    <section>
-        <h2>Kommentatoren hinzuf&uuml;gen</h2>
-        <div class="sectionInnerWrapper">
-            <label for="link">Link zum Post</label>
-            <input type="text" id="kommentatorenLink" placeholder="Bitte Link einf&uuml;gen" />
-            <button id="kommentatorenHinzufuegen">Kommentatoren hinzuf&uuml;gen</button>
-        </div>
-    </section>
-    <section>
-        <h2>Resteemer hinzuf&uuml;gen</h2>
-        <div class="sectionInnerWrapper">
-            <label for="link">Link zum Post</label>
-            <input type="text" id="reestemerLink" placeholder="Bitte Link einf&uuml;gen" />
-            <button id="reestemerHinzufuegen">Resteemer hinzuf&uuml;gen</button>
-        </div>
-    </section>
-    <section class="teilnehmerlisteWrapper">
-        <h2>Teilnehmerliste</h2>
-        <div class="sectionInnerWrapper">
-            <ul id="teilnehmerliste"></ul>
-            <button id="loeschen">Liste leeren</button>
-        </div>
-    </section>
-    <section>
-        <h2>Ermittlung der Gewinner</h2>
-        <div class="sectionInnerWrapper">
-            <label for="anzahlGewinner">Anzahl der Gewinner:</label>
-            <input type="text" id="anzahlGewinner" placeholder="0" />
-            <button id="ermitteln">Gewinner ermitteln</button>
-        </div>
-    </section>
+
+    <div class="tab-content active" id="tab-content-data">
+        <section>
+            <h2>Daten ermitteln</h2>
+            <div class="sectionInnerWrapper">
+                <form id="dataForm" name="data-form" method="get" action="" autocomplete="off">
+                    <label for="link">Link zum Post</label>
+                    <input type="text" id="postlink" placeholder="Bitte Link einf&uuml;gen" />
+                    <div class="options">
+                        <div class="option">
+                            <input type="checkbox" id="upvoterCheckbox" checked="checked" />
+                            <label for="upvoterCheckbox">Upvoter hinzuf&uuml;gen</label>
+                        </div>
+                        <div class="option">
+                            <input type="checkbox" id="commentorCheckbox" checked="checked" />
+                            <label for="commentorCheckbox">Kommentatoren hinzuf&uuml;gen</label>
+                        </div>
+                        <div class="option">
+                            <input type="checkbox" id="reestemerCheckbox" checked="checked" />
+                            <label for="reestemerCheckbox">Resteemer hinzuf&uuml;gen</label>
+                        </div>
+                    </div>
+                    <button type="submit">Daten erfassen</button>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <div class="tab-content teilnehmerlisteWrapper" id="tab-content-participants">
+        <section>
+            <h2>Teilnehmer hinzuf&uuml;gen</h2>
+            <div class="sectionInnerWrapper">
+                <label for="teilnehmer">Name des Teilnehmers:</label>
+                <input type="text" id="teilnehmer" placeholder="Snackaholic">
+                <button id="knopf">Teilnehmer hinzuf&uuml;gen</button>
+            </div>
+        </section>
+
+        <section>
+            <h2>Teilnehmerliste</h2>
+            <div class="sectionInnerWrapper">
+                <ul id="teilnehmerliste"></ul>
+                <button id="loeschen">Liste leeren</button>
+            </div>
+        </section>
+     </div>
+
+    <div class="tab-content" id="tab-content-winners">
+        <section>
+            <h2>Ermittlung der Gewinner</h2>
+            <div class="sectionInnerWrapper">
+                <label for="anzahlGewinner">Anzahl der Gewinner:</label>
+                <input type="text" id="anzahlGewinner" placeholder="0">
+                <button id="ermitteln">Gewinner ermitteln</button>
+            </div>
+        </section>
+    </div>
     <script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
     <script src="ressources/script.js"></script>
 </body>

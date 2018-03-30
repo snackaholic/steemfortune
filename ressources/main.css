@@ -27,7 +27,7 @@ h1,h2,h3 {
 
 header {
   background:#000000;
-  padding: 16px 0;
+  padding: 16px 0 0;
 }
 
 section {
@@ -81,6 +81,12 @@ section .sectionInnerWrapper {
     color:#fff;
 }
 
+.clear:after {
+    display: table;
+    clear:both;
+    content: "";
+}
+
 /* Formelemente */
 input, select, textarea {
     font-family: inherit;
@@ -129,6 +135,58 @@ button {
     font-weight: 500;
     font-size: 16px;
     margin-top:16px;
+}
+
+.options {
+    padding: 20px 0;
+}
+
+.option {
+    display:inline-block;
+}
+
+.option + .option {
+    margin-left:20px;
+}
+
+
+/* tabnav */
+nav {
+    background: #111;
+}
+
+nav button{
+    border-radius: 0px;
+    float:left;
+    background: none;
+    margin-top: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+nav button:hover {
+    background: #00e676;
+}
+
+nav button.active {
+    background: #000000;
+}
+
+nav button.active:after {
+    content: "";
+    position: absolute;
+    border: 1px solid #00e676;
+    width: 100%;
+    bottom:0;
+    left:0;
+}
+
+.tab-content {
+    display:none;
+}
+
+.tab-content.active {
+    display:block;
 }
 
 /* Notification style*/
@@ -188,4 +246,139 @@ button {
 #notification .content-wrapper .action a:hover {
     background-color:rgba(0,230,118,1);
     color:#fff;
+}
+
+/* Material Checkbox */
+
+input[type=checkbox] {
+    display: none;
+}
+
+.option label {
+  display: inline-block;
+  cursor: pointer;
+  padding-left: 25px;
+  position:relative;
+}
+
+input[type=checkbox] + label:after {
+    font-family: 'Material Icons';
+    content: "";
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    left: 0;
+    border: 2px solid #757575;
+    border-radius: 2px;
+}
+
+input[type=checkbox]:checked + label {
+    color: #fff;
+}
+
+input[type=checkbox]:checked + label:after {
+    content: "\E5CA";
+    color: #fff;
+    font-size: 16px;
+    text-align: center;
+    line-height: 16px;
+    background: #00e676;
+    border-color: #00e676;
+}
+
+
+/* loading notification */
+
+#loadstatusSection {
+  margin: 100px auto;
+  width:  50px;
+  height: 50px;
+  position: relative;
+}
+
+#loadstatusSection .circle {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+#loadstatusSection .circle:before {
+  content: '';
+  display: block;
+  /* kreis mit steemit Hintergrundfarbe */
+  width: 12px;
+  height: 12px;
+  background-color: #06D6A9;
+  border-radius: 50%;
+  animation: lebe 1s infinite linear;
+}
+
+#loadstatusSection .circle0{
+  transform: rotate(36deg);
+}
+#loadstatusSection .circle1 {
+  transform: rotate(72deg);
+}
+#loadstatusSection .circle2 {
+  transform: rotate(108deg);
+}
+#loadstatusSection .circle3 {
+  transform: rotate(144deg);
+}
+#loadstatusSection .circle4 {
+  transform: rotate(180deg);
+}
+#loadstatusSection .circle5 {
+  transform: rotate(216deg);
+}
+#loadstatusSection .circle6 {
+  transform: rotate(252deg);
+}
+#loadstatusSection .circle7 {
+  transform: rotate(288deg);
+}
+#loadstatusSection .circle8 {
+  transform: rotate(324deg);
+ }
+#loadstatusSection .circle9 {
+  transform: rotate(360deg);
+}
+
+
+#loadstatusSection .circle1:before {
+  animation-delay: -0.9s;
+}
+#loadstatusSection .circle2:before {
+  animation-delay: -0.8s;
+}
+#loadstatusSection .circle3:before {
+  animation-delay: -0.7s;
+}
+#loadstatusSection .circle4:before {
+  animation-delay: -0.6s;
+}
+#loadstatusSection .circle5:before {
+  animation-delay: -0.5s;
+}
+#loadstatusSection .circle6:before {
+  animation-delay: -0.4s;
+}
+#loadstatusSection .circle7:before {
+  animation-delay: -0.3s;
+}
+#loadstatusSection .circle8:before {
+  animation-delay: -0.2s;
+}
+#loadstatusSection .circle9:before {
+  animation-delay: -0.1s;
+}
+
+
+@keyframes lebe {
+   0%, 20% {opacity: 1}
+   75%{transform: scale(0.6);}
+   100%{opacity: 0.1; transform: scale(0.1);}
 }
