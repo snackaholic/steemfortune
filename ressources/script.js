@@ -1,5 +1,5 @@
 // participants list
-var teilnehmerliste = [];
+var participants = [];
 // callback counters for steemit api
 var callbackCounter = 0;
 var expectedCallbackCounter = 0;
@@ -26,14 +26,14 @@ function newParticipant(name, lose, pburl) {
 /* Adds a new participant to the participants list */
 function addParticipant(participant) {
 	var alreadyInList = false;
-    for (var i=0; i < teilnehmerliste.length; i++) {
-        if (teilnehmerliste[i].name === participant.name) {
+	for (var i = 0; i < participants.length; i++) {
+	    if (participants[i].name === participant.name) {
             alreadyInList = true;
             break;
         }
     }
     if (!alreadyInList) {
-        teilnehmerliste.push(participant);
+        participants.push(participant);
     } else {
         if (window.location.href.indexOf("/en/") == -1) {
             // German notification error
@@ -47,15 +47,15 @@ function addParticipant(participant) {
 // add stemian
 var knopf = document.getElementById("knopf");
 knopf.addEventListener("click", function(){
-	// feld holen
-    var eingabefeld = document.getElementById("teilnehmer");
-    var wert = eingabefeld.value;
-    // feld leeren
-    eingabefeld.value = "";
-    // teilnehmer hinzufuegen
-    if (wert != undefined && wert.length > 0) {
-        var neu = newParticipant(wert);
-        addParticipant(neu);
+	// get field
+    var field = document.getElementById("teilnehmer");
+    var fieldvalue = field.value;
+    // clear field
+    field.value = "";
+    // add participant to the list
+    if (fieldvalue != undefined && fieldvalue.length > 0) {
+        var participant = newParticipant(fieldvalue);
+        addParticipant(participant);
     }
     // liste darstellen
     stelleListedar();
@@ -67,7 +67,7 @@ loeschenknopf.addEventListener("click", function(){
 });
 
 function listeLeeren() {
-    teilnehmerliste = [];
+    participants = [];
     sichtbareListeLeeren();
 }
 
@@ -77,10 +77,21 @@ function sichtbareListeLeeren () {
         guiTeilnehmerliste.removeChild(guiTeilnehmerliste.firstChild);
     }
 }
-
+// deletes the participant by index
 function loescheEintrag (index) {
-	teilnehmerliste.splice(index, 1);
+    participants.splice(index, 1);
     stelleListedar();
+}
+
+// deletes the participant by name from the given collection
+function deleteByName(name, collection) {
+    for (var i = 0; i < collection.length; i++) {
+        if (collection[i].name === name) {
+            collection.splice(i, 1);
+            i = -1;
+        }
+    }
+    return collection;
 }
 
 function stelleListedar() {
@@ -91,9 +102,9 @@ function stelleListedar() {
         guiTeilnehmerliste.removeChild(guiTeilnehmerliste.firstChild);
   	}
     // ul liste füllen
-    for (var i=0; i < teilnehmerliste.length; i++) {
+    for (var i = 0; i < participants.length; i++) {
   		var li = document.createElement("li");
-  		var textKnoten = document.createTextNode(teilnehmerliste[i].name);
+  		var textKnoten = document.createTextNode(participants[i].name);
   	 	li.appendChild(textKnoten);
         // remove x an li hängen
         var span = document.createElement("span");
@@ -118,21 +129,30 @@ function stelleListedar() {
     }
 }
 
-/* Gewinner ermitteln  */
+/* determine the winners  */
 var ermittelnKnopf = document.getElementById("ermitteln");
 ermittelnKnopf.addEventListener("click", function(){
     var anzahlGewinner = document.getElementById("anzahlGewinner");
     var wert = anzahlGewinner.value;
-    var gewinnerString = "";
+    var winners = [];
     var lostopf = generiereLostopf();
+    var allowMultipleWinning = document.getElementById("allowMultipleWinning").checked;
 	for (var i = 0; i < wert; i++) {
-	    var gewinner = giveRandomItem(lostopf);
-	    if (i == 0) {
-	        gewinnerString += gewinner.name;
-	    } else {
-	        gewinnerString += "<br>" + gewinner.name;
+	    var winner = giveRandomItem(lostopf);
+	    winners.push(winner);
+	    if (!allowMultipleWinning) {
+	        lostopf = deleteByName(winner.name, lostopf);
+	        if (lostopf.length === 0) {
+	            break;
+	        }
 	    }
 	}
+    // generate winnerstring
+	var gewinnerString = "";
+	for (var i = 0; i < winners.length; i++) {
+	    gewinnerString += "<br>" + winners[i].name;
+	}
+	
 	if (window.location.href.indexOf("/en/") == -1) {
 	    // German notification 
 	    if (wert == 1) {
@@ -157,8 +177,8 @@ function giveRandomItem (array) {
 // Generates the lottery pot, based on the amount of tickets each participant has
 function generiereLostopf() {
     var lostopf = [];
-    for (var i=0; i < teilnehmerliste.length; i++) {
-  	    var teilnehmer = teilnehmerliste[i];
+    for (var i = 0; i < participants.length; i++) {
+        var teilnehmer = participants[i];
         var lose = 1;
         if (teilnehmer.lose != undefined) {
             var lose = teilnehmer.lose;

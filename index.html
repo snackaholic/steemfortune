@@ -19,7 +19,7 @@
 
     <div class="tab-content active" id="tab-content-data">
         <section>
-            <h2>Daten ermitteln</h2>
+            <h2>Daten vom Steemit Post ermitteln</h2>
             <div class="sectionInnerWrapper">
                 <form id="dataForm" name="data-form" method="get" action="" autocomplete="off">
                     <label for="link">Link zum Post</label>
@@ -46,7 +46,7 @@
 
     <div class="tab-content teilnehmerlisteWrapper" id="tab-content-participants">
         <section>
-            <h2>Teilnehmer hinzuf&uuml;gen</h2>
+            <h2>Teilnehmer manuell hinzuf&uuml;gen</h2>
             <div class="sectionInnerWrapper">
                 <label for="teilnehmer">Name des Teilnehmers:</label>
                 <input type="text" id="teilnehmer" placeholder="Snackaholic">
@@ -69,9 +69,19 @@
             <div class="sectionInnerWrapper">
                 <label for="anzahlGewinner">Anzahl der Gewinner:</label>
                 <input type="text" id="anzahlGewinner" placeholder="0">
+                <div class="options">
+                    <div class="option">
+                        <input type="checkbox" id="allowMultipleWinning" checked="checked" />
+                        <label for="allowMultipleWinning">Mehrfachziehung zulassen</label>
+                    </div>
+                </div>
                 <button id="ermitteln">Gewinner ermitteln</button>
-            </div>
+                </div>
         </section>
+    </div>
+
+    <div class="informationBanner">
+        <p>This is an open source project. <a href="https://github.com/snackaholic/steemfortune">View on Github</a> <a href="https://steemit.com/@snackaholic">Contact</a></p>
     </div>
     <script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
     <script src="ressources/script.js"></script>

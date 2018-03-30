@@ -259,6 +259,8 @@ input[type=checkbox] {
   cursor: pointer;
   padding-left: 25px;
   position:relative;
+  line-height: 20px;
+  margin:0;
 }
 
 input[type=checkbox] + label:after {
@@ -381,4 +383,19 @@ input[type=checkbox]:checked + label:after {
    0%, 20% {opacity: 1}
    75%{transform: scale(0.6);}
    100%{opacity: 0.1; transform: scale(0.1);}
+}
+
+
+.informationBanner {
+    background: #111;
+    padding: 5px;
+    text-align: center;
+    color: #fff;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+}
+
+.informationBanner a {
+    color: #00e676;
 }
