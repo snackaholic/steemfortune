@@ -8,83 +8,86 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
 <body>
-    <header>
-        <h1>Steemit Zufallsgenerator</h1>
-        <nav class="clear">
-            <button id="tab-data" class="active">Datenerfassung</button>
-            <button id="tab-participants">Teilnehmer</button>
-            <button id="tab-winners">Gewinner</button>
-        </nav>
-    </header>
+    <div class="contentWrapper">
+        <header>
+            <h1>Steemit Zufallsgenerator</h1>
+            <nav class="clear">
+                <button id="tab-data" class="active">Datenerfassung</button>
+                <button id="tab-participants">Teilnehmer</button>
+                <button id="tab-winners">Gewinner</button>
+            </nav>
+        </header>
 
-    <div class="tab-content active" id="tab-content-data">
-        <section>
-            <h2>Daten vom Steemit Post ermitteln</h2>
-            <div class="sectionInnerWrapper">
-                <form id="dataForm" name="data-form" method="get" action="" autocomplete="off">
-                    <label for="link">Link zum Post</label>
-                    <input type="text" id="postlink" placeholder="Bitte Link einf&uuml;gen" />
-                    <div class="options">
-                        <div class="option">
-                            <input type="checkbox" id="upvoterCheckbox" checked="checked" />
-                            <label for="upvoterCheckbox">Upvoter hinzuf&uuml;gen</label>
+        <div class="tab-contents">
+            <div class="overflowWrapper">
+                <div class="tab-content active" id="tab-content-data">
+                    <section>
+                        <h2>Daten vom Steemit Post ermitteln</h2>
+                        <div class="sectionInnerWrapper">
+                            <form id="dataForm" name="data-form" method="get" action="" autocomplete="off">
+                                <label for="link">Link zum Post</label>
+                                <input type="text" id="postlink" placeholder="Bitte Link einf&uuml;gen" />
+                                <div class="options">
+                                    <div class="option">
+                                        <input type="checkbox" id="upvoterCheckbox" checked="checked" />
+                                        <label for="upvoterCheckbox">Upvoter hinzuf&uuml;gen</label>
+                                    </div>
+                                    <div class="option">
+                                        <input type="checkbox" id="commentorCheckbox" checked="checked" />
+                                        <label for="commentorCheckbox">Kommentatoren hinzuf&uuml;gen</label>
+                                    </div>
+                                    <div class="option">
+                                        <input type="checkbox" id="reestemerCheckbox" checked="checked" />
+                                        <label for="reestemerCheckbox">Resteemer hinzuf&uuml;gen</label>
+                                    </div>
+                                </div>
+                                <button type="submit">Daten erfassen</button>
+                            </form>
                         </div>
-                        <div class="option">
-                            <input type="checkbox" id="commentorCheckbox" checked="checked" />
-                            <label for="commentorCheckbox">Kommentatoren hinzuf&uuml;gen</label>
-                        </div>
-                        <div class="option">
-                            <input type="checkbox" id="reestemerCheckbox" checked="checked" />
-                            <label for="reestemerCheckbox">Resteemer hinzuf&uuml;gen</label>
-                        </div>
-                    </div>
-                    <button type="submit">Daten erfassen</button>
-                </form>
-            </div>
-        </section>
-    </div>
-
-    <div class="tab-content teilnehmerlisteWrapper" id="tab-content-participants">
-        <section>
-            <h2>Teilnehmer manuell hinzuf&uuml;gen</h2>
-            <div class="sectionInnerWrapper">
-                <label for="teilnehmer">Name des Teilnehmers:</label>
-                <input type="text" id="teilnehmer" placeholder="Snackaholic">
-                <button id="knopf">Teilnehmer hinzuf&uuml;gen</button>
-            </div>
-        </section>
-
-        <section>
-            <h2>Teilnehmerliste</h2>
-            <div class="sectionInnerWrapper">
-                <ul id="teilnehmerliste"></ul>
-                <button id="loeschen">Liste leeren</button>
-            </div>
-        </section>
-     </div>
-
-    <div class="tab-content" id="tab-content-winners">
-        <section>
-            <h2>Ermittlung der Gewinner</h2>
-            <div class="sectionInnerWrapper">
-                <label for="anzahlGewinner">Anzahl der Gewinner:</label>
-                <input type="text" id="anzahlGewinner" placeholder="0">
-                <div class="options">
-                    <div class="option">
-                        <input type="checkbox" id="allowMultipleWinning" checked="checked" />
-                        <label for="allowMultipleWinning">Mehrfachziehung zulassen</label>
-                    </div>
+                    </section>
                 </div>
-                <button id="ermitteln">Gewinner ermitteln</button>
-                </div>
-        </section>
-    </div>
 
-    <!--
-    <div class="informationBanner">
-        <p>This is an open source project. <a href="https://github.com/snackaholic/steemfortune">View on Github</a> <a href="https://steemit.com/@snackaholic">Contact</a></p>
+                <div class="tab-content teilnehmerlisteWrapper" id="tab-content-participants">
+                    <section>
+                        <h2>Teilnehmer manuell hinzuf&uuml;gen</h2>
+                        <div class="sectionInnerWrapper">
+                            <label for="teilnehmer">Name des Teilnehmers:</label>
+                            <input type="text" id="teilnehmer" placeholder="Snackaholic">
+                            <button id="knopf">Teilnehmer hinzuf&uuml;gen</button>
+                        </div>
+                    </section>
+
+                    <section>
+                        <h2>Teilnehmerliste</h2>
+                        <div class="sectionInnerWrapper">
+                            <ul id="teilnehmerliste"></ul>
+                            <button id="loeschen">Liste leeren</button>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="tab-content" id="tab-content-winners">
+                    <section>
+                        <h2>Ermittlung der Gewinner</h2>
+                        <div class="sectionInnerWrapper">
+                            <label for="anzahlGewinner">Anzahl der Gewinner:</label>
+                            <input type="text" id="anzahlGewinner" placeholder="0">
+                            <div class="options">
+                                <div class="option">
+                                    <input type="checkbox" id="allowMultipleWinning" checked="checked" />
+                                    <label for="allowMultipleWinning">Mehrfachziehung zulassen</label>
+                                </div>
+                            </div>
+                            <button id="ermitteln">Gewinner ermitteln</button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+        <div class="informationBanner">
+            <p>This is an open source project. <a href="https://github.com/snackaholic/steemfortune">View on Github</a> <a href="https://steemit.com/@snackaholic">Contact</a></p>
+        </div>
     </div>
-    -->
     <script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
     <script src="ressources/script.js"></script>
 </body>
