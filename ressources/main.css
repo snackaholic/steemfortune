@@ -433,3 +433,19 @@ input[type=checkbox]:checked + label:after {
 .informationBanner a {
     color: #00e676;
 }
+
+/*svg */
+svg {
+    width: 16px;
+    height: 16px;
+    vertical-align: bottom;
+    margin-left:10px;
+}
+circle {
+    stroke: #1FBF8F;
+}
+path {
+    stroke: #1FBF8F;
+    fill: #1FBF8F;
+}
+    

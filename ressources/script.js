@@ -9,18 +9,27 @@ var handleInterval;
 
 
 /* new participant constructor*/
-function newParticipant(name, lose, pburl) {
-	var teilnehmer = {};
+function newParticipant(name, lose, pburl, didvote, didcomment, didresteem) {
+	var participant = {};
     if (lose !== undefined) {
-    	teilnehmer["lose"] = lose;
+        participant["lose"] = lose;
     }
     if (pburl !== undefined) {
-    	teilnehmer["pburl"] = pburl;
+        participant["pburl"] = pburl;
     }
   	if (name !== undefined) {
-    	teilnehmer["name"] = name;
-    }
-    return teilnehmer;
+  	    participant["name"] = name;
+  	}
+  	if (didvote !== undefined) {
+  	    participant["didvote"] = didvote;
+  	}
+  	if (didcomment !== undefined) {
+  	    participant["didcomment"] = didcomment;
+  	}
+  	if (didresteem !== undefined) {
+  	    participant["didresteem"] = didresteem;
+  	}
+  	return participant;
 }
 
 /* Adds a new participant to the participants list */
@@ -35,6 +44,7 @@ function addParticipant(participant) {
     if (!alreadyInList) {
         participants.push(participant);
     } else {
+        participants[i] = mergeParticipantAction(participant, participants[i]);
         if (window.location.href.indexOf("/en/") == -1) {
             // German notification error
             placeNotification("Fehler!", "<p>Teilnehmer " + participant.name + " bereits in Liste vorhanden!</p>");
@@ -42,6 +52,19 @@ function addParticipant(participant) {
             placeNotification("Error!", "<p>Participant " + participant.name + " is already in the participants list!</p>");
         }
     }
+}
+/* Merges the data of the two participants, to get all useractiondata; returns the merge dataset */
+function mergeParticipantAction(a, b) {
+    if (a.didvote != b.didvote) {
+        a.didvote = true;
+    }
+    if (a.didcomment !== b.didcomment) {
+        a.didcomment = true;
+    }
+    if (a.didresteem !== b.didresteem) {
+        a.didresteem = true;
+    }
+    return a;
 }
 
 // add stemian
@@ -105,7 +128,18 @@ function stelleListedar() {
     for (var i = 0; i < participants.length; i++) {
   		var li = document.createElement("li");
   		var textKnoten = document.createTextNode(participants[i].name);
-  	 	li.appendChild(textKnoten);
+  		li.appendChild(textKnoten);
+        // show useractions
+  		if (participants[i].didvote) {
+  		    li.insertAdjacentHTML('beforeend', upvotesvg);
+  		}
+  		if (participants[i].didcomment) {
+  		    li.insertAdjacentHTML('beforeend', commentsvg);
+  		}
+  		if (participants[i].didresteem) {
+  		    li.insertAdjacentHTML('beforeend', resteemsvg);
+  		}
+
         // remove x an li hängen
         var span = document.createElement("span");
         var txt = document.createTextNode("x");
@@ -271,7 +305,7 @@ form.addEventListener("submit", function () {
                 if (result != undefined) {
                     var length = result.length;
                     for (var i = 0; i < length; i++) {
-                        var neu = newParticipant(result[i].voter);
+                        var neu = newParticipant(result[i].voter, undefined, undefined, true, undefined, undefined);
                         addParticipant(neu);
                     }
                     addedEntrys += length;
@@ -286,7 +320,7 @@ form.addEventListener("submit", function () {
                 if (result != undefined) {
                     var length = result.length;
                     for (var i = 0; i < length; i++) {
-                        var neu = newParticipant(result[i].author);
+                        var neu = newParticipant(result[i].author, undefined, undefined, undefined, true, undefined);
                         addParticipant(neu);
                     }
                     addedEntrys += length;
@@ -303,7 +337,7 @@ form.addEventListener("submit", function () {
                     for (var i = 0; i < length; i++) {
                         // exclude the author from his own post
                         if (author != result[i]) {
-                            var neu = newParticipant(result[i]);
+                            var neu = newParticipant(result[i], undefined, undefined, undefined, undefined, true);
                             addParticipant(neu);
                         }
                     }
@@ -356,3 +390,8 @@ navbuttons.forEach(function (elem) {
         document.getElementById(toShow).classList.add("active");
     });
 });
+
+/* svgs for useraction */
+var upvotesvg = '<svg enable-background="new 0 0 33 33" version="1.1" viewBox="0 0 33 33" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Chevron_Up_Circle"><circle cx="16" cy="16" r="15" stroke="#121313" fill="none"></circle><path d="M16.699,11.293c-0.384-0.38-1.044-0.381-1.429,0l-6.999,6.899c-0.394,0.391-0.394,1.024,0,1.414 c0.395,0.391,1.034,0.391,1.429,0l6.285-6.195l6.285,6.196c0.394,0.391,1.034,0.391,1.429,0c0.394-0.391,0.394-1.024,0-1.414 L16.699,11.293z" fill="#121313"></path></g></svg>';
+var resteemsvg = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><path d="M448,192l-128,96v-64H128v128h248c4.4,0,8,3.6,8,8v48c0,4.4-3.6,8-8,8H72c-4.4,0-8-3.6-8-8V168c0-4.4,3.6-8,8-8h248V96 L448,192z"></path></svg>';
+var commentsvg = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" xml:space="preserve"><path d="M124.3,400H277c14.4,0,14.4,0.1,21.3,5.2S384,464,384,464v-64h3.7c42.2,0,76.3-31.8,76.3-71.4V119.7 c0-39.6-34.2-71.7-76.3-71.7H124.3C82.2,48,48,80.1,48,119.7v208.9C48,368.2,82.2,400,124.3,400z"></path></svg>';
