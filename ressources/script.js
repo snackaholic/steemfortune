@@ -9,14 +9,12 @@ var handleInterval;
 
 
 /* new participant constructor*/
-function newParticipant(name, lose, pburl, didvote, didcomment, didresteem) {
-	var participant = {};
-    if (lose !== undefined) {
-        participant["lose"] = lose;
-    }
-    if (pburl !== undefined) {
-        participant["pburl"] = pburl;
-    }
+function newParticipant(name, didvote, didcomment, didresteem) {
+    var participant = {
+        didcomment: false,
+        didvote: false,
+        didresteem: false
+    };
   	if (name !== undefined) {
   	    participant["name"] = name;
   	}
@@ -118,50 +116,84 @@ function deleteByName(name, collection) {
 }
 
 function stelleListedar() {
-	 // ul liste holen
+
+    /*
+	 // store reference to table
     var guiTeilnehmerliste = document.getElementById("teilnehmerliste");
-    // ul liste leeren
+    // clear table
     while (guiTeilnehmerliste.firstChild) {
         guiTeilnehmerliste.removeChild(guiTeilnehmerliste.firstChild);
   	}
-    // ul liste füllen
+    // fill table
     for (var i = 0; i < participants.length; i++) {
-  		var li = document.createElement("li");
+        var tr = document.createElement("tr");
+  		var td = document.createElement("td");
   		var textKnoten = document.createTextNode(participants[i].name);
-  		li.appendChild(textKnoten);
+  		td.appendChild(textKnoten);
         // show useractions
   		if (participants[i].didvote) {
-  		    li.insertAdjacentHTML('beforeend', upvotesvg);
+  		    td.insertAdjacentHTML('beforeend', upvotesvg);
   		}
   		if (participants[i].didcomment) {
-  		    li.insertAdjacentHTML('beforeend', commentsvg);
+  		    td.insertAdjacentHTML('beforeend', commentsvg);
   		}
   		if (participants[i].didresteem) {
-  		    li.insertAdjacentHTML('beforeend', resteemsvg);
+  		    td.insertAdjacentHTML('beforeend', resteemsvg);
   		}
 
-        // remove x an li hängen
+        // remove x an td hängen
         var span = document.createElement("span");
         var txt = document.createTextNode("x");
         span.className = "delete";
         span.appendChild(txt);
-        li.appendChild(span);
-        // li mit data index ausstatten
-        li.setAttribute('data-array-index', i);
-        // li in gui platzieren
-        guiTeilnehmerliste.appendChild(li);
+        td.appendChild(span);
+        // td mit data index ausstatten
+        td.setAttribute('data-array-index', i);
+        // td in gui platzieren
+        tr.appendChild(td);
+        guiTeilnehmerliste.appendChild(tr);
   	}
     
     // deletes funktion anhängen
     var deletes = document.getElementsByClassName("delete");
   	for (var j = 0; j < deletes .length; j++) {
     	    deletes [j].onclick = function() {
-    	    var eintrag = this.parentElement;  // auf das LI zugreifen
+    	    var eintrag = this.parentElement;  // access the td
     	    var referenz = eintrag.getAttribute('data-array-index');
     	    loescheEintrag(referenz);
     	};
     }
+    */
+    if ($.fn.DataTable.isDataTable("#teilnehmerliste")) {
+        $('#teilnehmerliste').DataTable().clear().destroy();
+    }
+    $('#teilnehmerliste').DataTable({
+        data: participants,
+        columns: [
+            { data: 'name', title : 'Name' },
+            { data: 'didvote', title: 'Upvote' + upvotesvg + '' },
+            { data: 'didcomment', title : 'Comment' + commentsvg + '' },
+            { data: 'didresteem', title: 'Resteem' + resteemsvg + '' }
+        ],
+        dom: 'Bfrtip',
+        buttons: [{
+            extend: 'pdf',
+            title: 'Steemfortune Export',
+            filename: 'steemfortune_export'
+        }, {
+            extend: 'excel',
+            title: 'Steemfortune Export',
+            filename: 'steemfortune_export'
+        }, {
+            extend: 'csv',
+            title: 'Steemfortune Export',
+            filename: 'steemfortune_export'
+        }]
+    });
+
+    $("#teilnehmerliste").width("100%");
 }
+
 
 /* determine the winners  */
 var ermittelnKnopf = document.getElementById("ermitteln");
@@ -214,9 +246,6 @@ function generiereLostopf() {
     for (var i = 0; i < participants.length; i++) {
         var teilnehmer = participants[i];
         var lose = 1;
-        if (teilnehmer.lose != undefined) {
-            var lose = teilnehmer.lose;
-        }
         for (var j = 0; j < lose; j++) {
             lostopf.push(teilnehmer);
         }
@@ -305,7 +334,7 @@ form.addEventListener("submit", function () {
                 if (result != undefined) {
                     var length = result.length;
                     for (var i = 0; i < length; i++) {
-                        var neu = newParticipant(result[i].voter, undefined, undefined, true, undefined, undefined);
+                        var neu = newParticipant(result[i].voter, true, undefined, undefined);
                         addParticipant(neu);
                     }
                     addedEntrys += length;
@@ -320,7 +349,7 @@ form.addEventListener("submit", function () {
                 if (result != undefined) {
                     var length = result.length;
                     for (var i = 0; i < length; i++) {
-                        var neu = newParticipant(result[i].author, undefined, undefined, undefined, true, undefined);
+                        var neu = newParticipant(result[i].author, undefined, true, undefined);
                         addParticipant(neu);
                     }
                     addedEntrys += length;
@@ -337,7 +366,7 @@ form.addEventListener("submit", function () {
                     for (var i = 0; i < length; i++) {
                         // exclude the author from his own post
                         if (author != result[i]) {
-                            var neu = newParticipant(result[i], undefined, undefined, undefined, undefined, true);
+                            var neu = newParticipant(result[i], undefined, undefined, true);
                             addParticipant(neu);
                         }
                     }
