@@ -1,5 +1,7 @@
 // participants list
 var participants = [];
+// winner list
+var winnersObjectArray = [];
 // callback counters for steemit api
 var callbackCounter = 0;
 var expectedCallbackCounter = 0;
@@ -173,7 +175,8 @@ function stelleListedar() {
             { data: 'name', title : 'Name' },
             { data: 'didvote', title: 'Upvote' + upvotesvg + '' },
             { data: 'didcomment', title : 'Comment' + commentsvg + '' },
-            { data: 'didresteem', title: 'Resteem' + resteemsvg + '' }
+            { data: 'didresteem', title: 'Resteem' + resteemsvg + '' },
+            { data: null, defaultContent: '<button class="deleteButton">delete</button>' }
         ],
         dom: 'Bfrtip',
         buttons: [{
@@ -188,7 +191,8 @@ function stelleListedar() {
             extend: 'csv',
             title: 'Steemfortune Export',
             filename: 'steemfortune_export'
-        }]
+        }],
+        searching : false
     });
 
     $("#teilnehmerliste").width("100%");
@@ -233,6 +237,46 @@ ermittelnKnopf.addEventListener("click", function(){
 	        placeNotification("Congrantulations!", "<p>The winners are " + gewinnerString + " !</p>");
 	    }
 	}
+
+    // modify winners to object
+    // reset first
+	winnersObjectArray = [];
+	for (var i = 0; i < winners.length; i++) {
+	    winnersObjectArray.push(winners[i]);
+	}
+
+
+    // generate winner table
+	if ($.fn.DataTable.isDataTable("#gewinnerliste")) {
+	    $('#gewinnerliste').DataTable().clear().destroy();
+	}
+	$('#gewinnerliste').DataTable({
+	    data: winnersObjectArray,
+	    columns: [
+            { data: 'name', title: 'Name' },
+            { data: 'didvote', title: 'Upvote' + upvotesvg + '' },
+            { data: 'didcomment', title: 'Comment' + commentsvg + '' },
+            { data: 'didresteem', title: 'Resteem' + resteemsvg + '' }
+	    ],
+	    dom: 'Bfrtip',
+	    buttons: [{
+	        extend: 'pdf',
+	        title: 'Steemfortune Winner Export',
+	        filename: 'steemfortune_winner_export'
+	    }, {
+	        extend: 'excel',
+	        title: 'Steemfortune Winner Export',
+	        filename: 'steemfortune_winner_export'
+	    }, {
+	        extend: 'csv',
+	        title: 'Steemfortune Winner Export',
+	        filename: 'steemfortune_winner_export'
+	    }],
+	    searching: false
+	});
+
+	$("#gewinnerliste").width("100%");
+
 });
 
 // Returns a random item from a given array
@@ -424,3 +468,11 @@ navbuttons.forEach(function (elem) {
 var upvotesvg = '<svg enable-background="new 0 0 33 33" version="1.1" viewBox="0 0 33 33" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Chevron_Up_Circle"><circle cx="16" cy="16" r="15" stroke="#121313" fill="none"></circle><path d="M16.699,11.293c-0.384-0.38-1.044-0.381-1.429,0l-6.999,6.899c-0.394,0.391-0.394,1.024,0,1.414 c0.395,0.391,1.034,0.391,1.429,0l6.285-6.195l6.285,6.196c0.394,0.391,1.034,0.391,1.429,0c0.394-0.391,0.394-1.024,0-1.414 L16.699,11.293z" fill="#121313"></path></g></svg>';
 var resteemsvg = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><path d="M448,192l-128,96v-64H128v128h248c4.4,0,8,3.6,8,8v48c0,4.4-3.6,8-8,8H72c-4.4,0-8-3.6-8-8V168c0-4.4,3.6-8,8-8h248V96 L448,192z"></path></svg>';
 var commentsvg = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" xml:space="preserve"><path d="M124.3,400H277c14.4,0,14.4,0.1,21.3,5.2S384,464,384,464v-64h3.7c42.2,0,76.3-31.8,76.3-71.4V119.7 c0-39.6-34.2-71.7-76.3-71.7H124.3C82.2,48,48,80.1,48,119.7v208.9C48,368.2,82.2,400,124.3,400z"></path></svg>';
+
+
+/* add delete logic to custom button within datatable */
+$('body').on('click', '.deleteButton', function () {
+    var participantToDelete = this.parentElement.parentElement.firstChild.textContent;
+    participants = deleteByName(participantToDelete, participants);
+    stelleListedar();
+});
