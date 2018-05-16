@@ -1,5 +1,7 @@
 // participants list
 var participants = [];
+// winner list
+var winnersObjectArray = [];
 // callback counters for steemit api
 var callbackCounter = 0;
 var expectedCallbackCounter = 0;
@@ -9,14 +11,12 @@ var handleInterval;
 
 
 /* new participant constructor*/
-function newParticipant(name, lose, pburl, didvote, didcomment, didresteem) {
-	var participant = {};
-    if (lose !== undefined) {
-        participant["lose"] = lose;
-    }
-    if (pburl !== undefined) {
-        participant["pburl"] = pburl;
-    }
+function newParticipant(name, didvote, didcomment, didresteem) {
+    var participant = {
+        didcomment: false,
+        didvote: false,
+        didresteem: false
+    };
   	if (name !== undefined) {
   	    participant["name"] = name;
   	}
@@ -118,50 +118,86 @@ function deleteByName(name, collection) {
 }
 
 function stelleListedar() {
-	 // ul liste holen
+
+    /*
+	 // store reference to table
     var guiTeilnehmerliste = document.getElementById("teilnehmerliste");
-    // ul liste leeren
+    // clear table
     while (guiTeilnehmerliste.firstChild) {
         guiTeilnehmerliste.removeChild(guiTeilnehmerliste.firstChild);
   	}
-    // ul liste füllen
+    // fill table
     for (var i = 0; i < participants.length; i++) {
-  		var li = document.createElement("li");
+        var tr = document.createElement("tr");
+  		var td = document.createElement("td");
   		var textKnoten = document.createTextNode(participants[i].name);
-  		li.appendChild(textKnoten);
+  		td.appendChild(textKnoten);
         // show useractions
   		if (participants[i].didvote) {
-  		    li.insertAdjacentHTML('beforeend', upvotesvg);
+  		    td.insertAdjacentHTML('beforeend', upvotesvg);
   		}
   		if (participants[i].didcomment) {
-  		    li.insertAdjacentHTML('beforeend', commentsvg);
+  		    td.insertAdjacentHTML('beforeend', commentsvg);
   		}
   		if (participants[i].didresteem) {
-  		    li.insertAdjacentHTML('beforeend', resteemsvg);
+  		    td.insertAdjacentHTML('beforeend', resteemsvg);
   		}
 
-        // remove x an li hängen
+        // remove x an td hängen
         var span = document.createElement("span");
         var txt = document.createTextNode("x");
         span.className = "delete";
         span.appendChild(txt);
-        li.appendChild(span);
-        // li mit data index ausstatten
-        li.setAttribute('data-array-index', i);
-        // li in gui platzieren
-        guiTeilnehmerliste.appendChild(li);
+        td.appendChild(span);
+        // td mit data index ausstatten
+        td.setAttribute('data-array-index', i);
+        // td in gui platzieren
+        tr.appendChild(td);
+        guiTeilnehmerliste.appendChild(tr);
   	}
     
     // deletes funktion anhängen
     var deletes = document.getElementsByClassName("delete");
   	for (var j = 0; j < deletes .length; j++) {
     	    deletes [j].onclick = function() {
-    	    var eintrag = this.parentElement;  // auf das LI zugreifen
+    	    var eintrag = this.parentElement;  // access the td
     	    var referenz = eintrag.getAttribute('data-array-index');
     	    loescheEintrag(referenz);
     	};
     }
+    */
+    if ($.fn.DataTable.isDataTable("#teilnehmerliste")) {
+        $('#teilnehmerliste').DataTable().clear().destroy();
+    }
+    $('#teilnehmerliste').DataTable({
+        data: participants,
+        columns: [
+            { data: 'name', title : 'Name' },
+            { data: 'didvote', title: 'Upvote' + upvotesvg + '' },
+            { data: 'didcomment', title : 'Comment' + commentsvg + '' },
+            { data: 'didresteem', title: 'Resteem' + resteemsvg + '' },
+            { data: null, defaultContent: '<button class="deleteButton">delete</button>' }
+        ],
+        dom: 'Bfrtip',
+        buttons: [{
+            extend: 'pdf',
+            title: 'Steemfortune Export',
+            filename: 'steemfortune_export'
+        }, {
+            extend: 'excel',
+            title: 'Steemfortune Export',
+            filename: 'steemfortune_export'
+        }, {
+            extend: 'csv',
+            title: 'Steemfortune Export',
+            filename: 'steemfortune_export'
+        }],
+        searching : false
+    });
+
+    $("#teilnehmerliste").width("100%");
 }
+
 
 /* determine the winners  */
 var ermittelnKnopf = document.getElementById("ermitteln");
@@ -201,6 +237,46 @@ ermittelnKnopf.addEventListener("click", function(){
 	        placeNotification("Congrantulations!", "<p>The winners are " + gewinnerString + " !</p>");
 	    }
 	}
+
+    // modify winners to object
+    // reset first
+	winnersObjectArray = [];
+	for (var i = 0; i < winners.length; i++) {
+	    winnersObjectArray.push(winners[i]);
+	}
+
+
+    // generate winner table
+	if ($.fn.DataTable.isDataTable("#gewinnerliste")) {
+	    $('#gewinnerliste').DataTable().clear().destroy();
+	}
+	$('#gewinnerliste').DataTable({
+	    data: winnersObjectArray,
+	    columns: [
+            { data: 'name', title: 'Name' },
+            { data: 'didvote', title: 'Upvote' + upvotesvg + '' },
+            { data: 'didcomment', title: 'Comment' + commentsvg + '' },
+            { data: 'didresteem', title: 'Resteem' + resteemsvg + '' }
+	    ],
+	    dom: 'Bfrtip',
+	    buttons: [{
+	        extend: 'pdf',
+	        title: 'Steemfortune Winner Export',
+	        filename: 'steemfortune_winner_export'
+	    }, {
+	        extend: 'excel',
+	        title: 'Steemfortune Winner Export',
+	        filename: 'steemfortune_winner_export'
+	    }, {
+	        extend: 'csv',
+	        title: 'Steemfortune Winner Export',
+	        filename: 'steemfortune_winner_export'
+	    }],
+	    searching: false
+	});
+
+	$("#gewinnerliste").width("100%");
+
 });
 
 // Returns a random item from a given array
@@ -214,9 +290,6 @@ function generiereLostopf() {
     for (var i = 0; i < participants.length; i++) {
         var teilnehmer = participants[i];
         var lose = 1;
-        if (teilnehmer.lose != undefined) {
-            var lose = teilnehmer.lose;
-        }
         for (var j = 0; j < lose; j++) {
             lostopf.push(teilnehmer);
         }
@@ -305,7 +378,7 @@ form.addEventListener("submit", function () {
                 if (result != undefined) {
                     var length = result.length;
                     for (var i = 0; i < length; i++) {
-                        var neu = newParticipant(result[i].voter, undefined, undefined, true, undefined, undefined);
+                        var neu = newParticipant(result[i].voter, true, undefined, undefined);
                         addParticipant(neu);
                     }
                     addedEntrys += length;
@@ -320,7 +393,7 @@ form.addEventListener("submit", function () {
                 if (result != undefined) {
                     var length = result.length;
                     for (var i = 0; i < length; i++) {
-                        var neu = newParticipant(result[i].author, undefined, undefined, undefined, true, undefined);
+                        var neu = newParticipant(result[i].author, undefined, true, undefined);
                         addParticipant(neu);
                     }
                     addedEntrys += length;
@@ -337,7 +410,7 @@ form.addEventListener("submit", function () {
                     for (var i = 0; i < length; i++) {
                         // exclude the author from his own post
                         if (author != result[i]) {
-                            var neu = newParticipant(result[i], undefined, undefined, undefined, undefined, true);
+                            var neu = newParticipant(result[i], undefined, undefined, true);
                             addParticipant(neu);
                         }
                     }
@@ -395,3 +468,11 @@ navbuttons.forEach(function (elem) {
 var upvotesvg = '<svg enable-background="new 0 0 33 33" version="1.1" viewBox="0 0 33 33" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="Chevron_Up_Circle"><circle cx="16" cy="16" r="15" stroke="#121313" fill="none"></circle><path d="M16.699,11.293c-0.384-0.38-1.044-0.381-1.429,0l-6.999,6.899c-0.394,0.391-0.394,1.024,0,1.414 c0.395,0.391,1.034,0.391,1.429,0l6.285-6.195l6.285,6.196c0.394,0.391,1.034,0.391,1.429,0c0.394-0.391,0.394-1.024,0-1.414 L16.699,11.293z" fill="#121313"></path></g></svg>';
 var resteemsvg = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><path d="M448,192l-128,96v-64H128v128h248c4.4,0,8,3.6,8,8v48c0,4.4-3.6,8-8,8H72c-4.4,0-8-3.6-8-8V168c0-4.4,3.6-8,8-8h248V96 L448,192z"></path></svg>';
 var commentsvg = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" xml:space="preserve"><path d="M124.3,400H277c14.4,0,14.4,0.1,21.3,5.2S384,464,384,464v-64h3.7c42.2,0,76.3-31.8,76.3-71.4V119.7 c0-39.6-34.2-71.7-76.3-71.7H124.3C82.2,48,48,80.1,48,119.7v208.9C48,368.2,82.2,400,124.3,400z"></path></svg>';
+
+
+/* add delete logic to custom button within datatable */
+$('body').on('click', '.deleteButton', function () {
+    var participantToDelete = this.parentElement.parentElement.firstChild.textContent;
+    participants = deleteByName(participantToDelete, participants);
+    stelleListedar();
+});

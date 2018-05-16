@@ -64,8 +64,14 @@ section .sectionInnerWrapper {
   color:#fff;
 }
 
-#teilnehmerliste li:nth-child(odd) {
-  background-color:#484848;
+.odd {
+  background-color:#484848 !important;
+  color: #fff !important;
+}
+
+.even {
+    background-color: white !important;
+    color: #484848 !important;
 }
 
 #teilnehmerliste li .delete {
@@ -120,7 +126,17 @@ label {
   color:#9f9f9f;
 }
 
-button {
+.dataTables_wrapper .dataTables_info {
+    color: #9f9f9f !important;
+}
+
+.dt-button {
+    display: inline-block;
+    margin: 0 !important;
+    line-height: 32px;
+}
+
+button, .dt-button {
     color: #fff;
     background-color: #00e676;
     text-decoration: none;
