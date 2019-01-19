@@ -356,7 +356,7 @@ function removeNotifications() {
 
 /* Form evaluation */
 var form = document.getElementById("dataForm");
-form.addEventListener("submit", function () {
+form.addEventListener("submit", function (event) {
     event.preventDefault();
     // get option config
     var getUpvoters = document.getElementById("upvoterCheckbox").checked;
