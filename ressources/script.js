@@ -363,7 +363,7 @@ form.addEventListener("submit", function (event) {
     var getCommentators = document.getElementById("commentorCheckbox").checked;
     var getResteemer = document.getElementById("reestemerCheckbox").checked;
     // get post data
-    var regex = new RegExp("@([a-z]+)\/([^\/]+)$");
+    var regex = new RegExp("@([a-z0-9]+)\/([^\/]+)$");
     var ulink = document.getElementById("postlink").value;
     if (ulink != undefined && ulink.length > 0) {
         var author = ulink.match(regex)[1];
