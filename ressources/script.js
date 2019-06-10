@@ -31,6 +31,7 @@ function clearBotsFromParticipants() {
         }
     }
     participants = temparray;
+    stelleListedar();
 }
 
 /* new participant constructor*/
@@ -458,7 +459,6 @@ function checkStatus() {
     if (callbackCounter == expectedCallbackCounter) {
         clearInterval(handleInterval);
         addedParticipantsNotification(addedEntrys);
-        stelleListedar();
         // reset variables
         callbackCounter = 0;
         expectedCallbackCounter = 0;
@@ -468,6 +468,7 @@ function checkStatus() {
         if (botsetting) {
             clearBotsFromParticipants();
         }
+        stelleListedar();
     }
 }
 
