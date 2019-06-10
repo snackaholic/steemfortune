@@ -16,8 +16,21 @@ function getbots(url) {
     $.getJSON(url, {
         format: "json"
     }).done(function (data) {
-        console.log(data);
+        bots = data;
     });
+}
+
+getbots("https://snackaholic.github.io/steemfortune/ressources/bots.json");
+
+function clearBotsFromParticipants() {
+    var temparray = [];
+    for (var i = 0; i < participants.length; i++) {
+        var name = participants[i].name;
+        if (bots.indexOf(name) == -1) {
+            temparray.push(participants[i]);
+        }
+    }
+    participants = temparray;
 }
 
 /* new participant constructor*/
@@ -450,6 +463,11 @@ function checkStatus() {
         callbackCounter = 0;
         expectedCallbackCounter = 0;
         addedEntrys = 0;
+        // check if user wants to get rid of bots listed in bot json
+        var botsetting = document.getElementById("botfilterCheckbox").checked;
+        if (botsetting) {
+            clearBotsFromParticipants();
+        }
     }
 }
 
