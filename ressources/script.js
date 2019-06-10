@@ -9,6 +9,16 @@ var addedEntrys = 0;
 // callback interval checker
 var handleInterval;
 
+// botarray
+var bots;
+
+function getbots(url) {
+    $.getJSON(url, {
+        format: "json"
+    }).done(function (data) {
+        console.log(data);
+    });
+}
 
 /* new participant constructor*/
 function newParticipant(name, didvote, didcomment, didresteem) {
